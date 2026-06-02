@@ -11,9 +11,9 @@ Apply a consistent, scalable structure for frontend page development with clear 
 
 ## Core Rules
 
-### 1) Page Requirement Development
+### 1) Page Feature Development
 
-When implementing a page feature, always follow componentized and modularized development.
+During page feature development, always follow componentized and modularized development.
 
 For each feature/module, make sure the following are defined and organized by module:
 
@@ -31,7 +31,18 @@ If the project does not already have these directories under `src`, create them 
 
 Do not leave these artifacts implicit inside page files when they belong to reusable module definitions.
 
-### 2) Component Development
+### 2) API Integration and Joint-Debugging
+
+During API integration and joint-debugging in Rule 2, the modularization and artifact requirements defined in Rule 1 must still be followed. At the same time, the integration process should follow a backend-interface-first standardization principle.
+
+For all API-related module artifacts (enums, types/interfaces, constants, and API definitions):
+
+- Prefer backend contract standards over ad-hoc frontend naming or temporary mappings
+- Keep names, value domains, and field semantics aligned with backend interfaces
+- Consolidate duplicated local variants into unified backend-aligned definitions
+- If adaptation is required for display, isolate it in explicit transform logic instead of polluting base definitions
+
+### 3) Component Development
 
 #### Vue implementation baseline
 
@@ -60,7 +71,7 @@ Recommended pattern:
 
 Use this folder-first pattern for both shared and private components.
 
-### 3) Complex Page Structure
+### 4) Complex Page Structure
 
 For complex pages, split by component nature and place files in purpose-specific folders:
 
@@ -88,6 +99,7 @@ Use this checklist whenever you implement or refactor a page:
 - [ ] Add/update module-level types/interfaces (TypeScript projects)
 - [ ] Add/update module-level constants
 - [ ] Add/update module-level API definitions
+- [ ] During API integration, prioritize backend contract standards and unify enums/types/constants/APIs accordingly
 - [ ] Ensure `src/enums`, `src/interface`, `src/constants`, `src/api` exist
 - [ ] Classify components into `components/public` or `components/private`
 - [ ] Use folder-first component creation pattern
