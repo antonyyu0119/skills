@@ -40,7 +40,7 @@ For all API-related module artifacts (enums, types/interfaces, constants, and AP
 - Prefer backend contract standards over ad-hoc frontend naming or temporary mappings
 - Keep names, value domains, and field semantics aligned with backend interfaces
 - Consolidate duplicated local variants into unified backend-aligned definitions
-- If adaptation is required for display, isolate it in explicit transform logic instead of polluting base definitions
+- If display adaptation is needed, still prioritize backend fields. Only when the gap is substantial (for example, completely incompatible types), use explicit transformation logic, while preserving the integrity of base definitions as much as possible
 
 ### 3) Component Development
 
