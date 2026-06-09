@@ -79,14 +79,18 @@ For complex pages, split by component nature and place files in purpose-specific
   - `views/<page>/components`
 - Multi-tab pages:
   - `views/<page>/tabs`
-- Semantically independent business modules:
+- Page sections with actual module-level business meaning:
   - `views/<page>/modules`
 
 Examples of module-level units include:
 
+- Header module
+- Filter module
 - List module
 - Detail module
 - Step modules for multi-step flows
+
+For example, if a page contains a header module, list module, filter module, and detail module, place these modules under `views/<page>/modules`. For pages completed through multiple steps, place each step module under `views/<page>/modules`.
 
 The goal is to keep page architecture discoverable: structure should reveal responsibility.
 
