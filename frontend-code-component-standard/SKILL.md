@@ -14,7 +14,9 @@ Use this skill for frontend project implementation that needs consistent compone
 1. Identify UI library first.
 2. Prefer UI components over raw HTML/CSS unless user explicitly requests custom styles.
 3. Implement interaction visibility with `v-model` + `defineModel`.
-4. Implement user-input submission flows with UI form components.
+4. Ensure `v-model` state uses an updatable container.
+5. Implement user-input submission flows with UI form components.
+6. Keep component nesting thin and purposeful.
 
 ## 1) Identify UI library first
 
@@ -113,7 +115,51 @@ function handleClose() {
 </script>
 ```
 
-## 4) Form standard for user-input and submit flows
+## 4) v-model state container standard
+
+When passing state to a child component through `v-model`, the parent binding must be an updatable container.
+
+Prefer:
+
+- `ref(...)` for local page/component state
+- `defineModel(...)` when forwarding a model from parent to child
+
+Avoid passing a `const reactive(...)` object directly as a component `v-model` binding, because Vue cannot assign back to a const reactive binding and may warn:
+
+```txt
+v-model cannot update a const reactive binding
+```
+
+Preferred:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const basicForm = ref({
+  name: '',
+  description: '',
+});
+</script>
+
+<template>
+  <BasicConfigForm v-model:basic="basicForm" />
+</template>
+```
+
+For nested model forwarding, pass the model returned by `defineModel` directly:
+
+```vue
+<script setup lang="ts">
+const basic = defineModel<BasicForm>('basic', { required: true });
+</script>
+
+<template>
+  <BasicConfigForm v-model:basic="basic" />
+</template>
+```
+
+## 5) Form standard for user-input and submit flows
 
 For any UI that collects user input and submits to backend (or mock API), use UI form components:
 
@@ -185,13 +231,71 @@ function handleSubmit() {
 </script>
 ```
 
+## 6) Component nesting standard
+
+Keep wrapper and nesting components thin. A wrapper component should compose child components, not reshape state unless it has a real adaptation responsibility.
+
+### Avoid unnecessary model bridge computed
+
+If a child component can consume the same model shape, forward the model directly:
+
+```vue
+<script setup lang="ts">
+const basic = defineModel<ReflowBasicInfo>('basic', { required: true });
+</script>
+
+<template>
+  <BasicConfigForm v-model:basic="basic" />
+</template>
+```
+
+Avoid creating a computed getter/setter only to pick part of the same model:
+
+```ts
+const basicInfo = computed({
+  get: () => ({
+    name: basic.value.name,
+    description: basic.value.description,
+  }),
+  set: value => {
+    basic.value.name = value.name;
+    basic.value.description = value.description;
+  },
+});
+```
+
+Use a computed bridge only when the wrapper truly adapts incompatible data shapes, normalizes values, or adds meaningful transformation logic.
+
+### Use attrs passthrough for simple wrapper props
+
+When a wrapper only forwards simple display or configuration props such as `title`, `size`, `layout`, or `disabled`, prefer `$attrs` passthrough instead of redeclaring and manually forwarding each prop.
+
+```vue
+<script setup lang="ts">
+defineOptions({
+  inheritAttrs: false,
+});
+
+const basic = defineModel<BasicForm>('basic', { required: true });
+</script>
+
+<template>
+  <BasicConfigForm v-model:basic="basic" v-bind="$attrs" />
+</template>
+```
+
+Use `inheritAttrs: false` when attrs should land on a specific child component instead of the wrapper root element.
+
 ## Implementation Checklist
 
 - [ ] UI library identified
 - [ ] UI components preferred over raw HTML/CSS
 - [ ] Visibility state uses `v-model` + `defineModel`
+- [ ] `v-model` bindings use `ref` or `defineModel`, not const `reactive` bindings
 - [ ] Input/submit areas use UI form components
 - [ ] Dynamic form items use path-style `name`
 - [ ] Inline/horizontal layout uses row/col/space components first
+- [ ] Nested components forward compatible models directly instead of adding computed bridges
+- [ ] Simple wrapper props are forwarded with `$attrs` when the wrapper has no adaptation logic
 - [ ] New custom CSS minimized
 - [ ] Existing project style conventions preserved
