@@ -2,10 +2,10 @@
 name: gitlab-batch-commit
 description: >
   Plans and executes batched git commits for company GitLab uploads with a
-  1500-line-per-commit limit, dual-type commit messages (feat/fix/test/skip +
+  800-line-per-commit limit, dual-type commit messages (feat/fix/test/skip +
   Co-Authored-By code/fix/test), and Test-file separation. Use when uploading
   a project to GitLab, batch-committing a large codebase, or when the user
-  mentions 分批提交、1500行、skip commit、工单号 commit、GitLab 导入。
+  mentions 分批提交、800行、1500行、skip commit、工单号 commit、GitLab 导入。
 disable-model-invocation: true
 ---
 
@@ -17,7 +17,7 @@ disable-model-invocation: true
 ## When to Use
 
 - 首次将大型项目上传到公司 GitLab
-- 需要满足单条 commit ≤ 1500 行的后台校验
+- 需要满足单条 commit ≤ 800 行的后台校验
 - 需要按模块分批提交，便于审查与追溯
 
 **不要用于**：日常小改动提交 → 使用 `git-commit` skill。
@@ -59,8 +59,8 @@ git log -1 --format=%B
 ## 3. Batching Rules
 
 ```text
-打包上限：1400 行/批（为 1500 硬限制留缓冲）
-硬限制：单条 commit 总行数 ≤ 1500
+打包上限：700 行/批（为 800 硬限制留缓冲）
+硬限制：单条 commit 总行数 ≤ 800
 超限：标题提交类型用 skip（GitLab 导入专用扩展）
 暂存：git add -- <files>，严禁 git add .
 推送：禁止 git push（除非用户明确授权）
@@ -126,7 +126,7 @@ EOF
 | `feat` | 普通业务代码（AI 闭环/纯 AI/少量人工调整） |
 | `fix` | 当前分支名包含 `fix` 时的非 Test 批次 |
 | `test` | Test 专用批次（第二 token **强制**为 `test`） |
-| `skip` | GitLab 导入专用：单批行数 > 1500 且无法拆分 |
+| `skip` | GitLab 导入专用：单批行数 > 800 且无法拆分 |
 
 **Co-Authored-By 第三段 `<AI生成类型>`**（与标题类型独立判定）：
 
@@ -141,7 +141,7 @@ EOF
 1. 批次仅含 Test 文件 → 标题 `test`，Co-Authored-By 第三段 `test`
 2. 修复 AI 自身错误/CR 问题 → Co-Authored-By 第三段 `fix`（标题类型仍遵循分支约束）
 3. 其余业务代码 → Co-Authored-By 第三段 `code`
-4. 批次行数 > 1500 且无法拆分 → 标题 `skip`（Co-Authored-By 通常仍为 `code`）
+4. 批次行数 > 800 且无法拆分 → 标题 `skip`（Co-Authored-By 通常仍为 `code`）
 
 ### 4.3 分支约束（第 7 节）
 
@@ -282,4 +282,4 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 ## Related Skills
 
 - **日常提交 + 自动推送** → `git-commit`
-- **GitLab 大批量首次导入、1500 行限制** → `gitlab-batch-commit`（本 skill）
+- **GitLab 大批量首次导入、800 行限制** → `gitlab-batch-commit`（本 skill）

@@ -9,8 +9,8 @@ import re
 import sys
 from pathlib import Path
 
-PACK_LIMIT = 1400
-HARD_LIMIT = 1500
+PACK_LIMIT = 700
+HARD_LIMIT = 800
 EXCLUDE_NAMES = {".DS_Store"}
 
 TEST_PATH_RE = re.compile(r"(^|/)(test|tests|__tests__)(/|$)")
@@ -147,7 +147,7 @@ def plan_commits(
 def format_markdown(plans: list[dict]) -> str:
     lines_out = [f"## 提交计划（共 {len(plans)} 批）\n"]
     for p in plans:
-        flag = " ⚠️超1500" if p["exceeds_hard_limit"] else ""
+        flag = " ⚠️超800" if p["exceeds_hard_limit"] else ""
         lines_out.append(
             f"### 第 {p['batch']} 批{flag}\n"
             f"- 行数: {p['lines']} | 文件: {p['file_count']}\n"
